@@ -30,6 +30,10 @@
 * AccessUtil 公众号接入测试/获取accessToken等操作工具类
 * NetworkIOUtil 和网络IO相关的辅助工具类
 
+### src/main/resources
+
+三个按钮布局json文件
+
 ## 注意
 
 1. 觉得包不够，可以自己再加包
