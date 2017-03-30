@@ -1,0 +1,13 @@
+{
+  "button":[
+	{
+	  "type":"click",
+	  "name":"我是用户",
+	  "key":"I_AM_USER_BUTTON"
+	},
+	{
+	  "type":"click",
+	  "name":"我是快递员",
+	  "key":"I_AM_COURIER_BUTTON"
+	}]
+}
