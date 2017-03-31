@@ -42,3 +42,7 @@
 4. git上传注意.gitignore
 5. 注意编码统一utf8，尤其是windows下的eclipse
 6. 需要改动别人代码时通知一声
+
+## 进度
+
+暂无
