@@ -39,9 +39,10 @@ public interface CourierService
 	/**
 	 * 发送text消息
 	 * @param courierOpenId 快递员openId
+	 * @param message 发送的文本信息
 	 * @return 状态机结果
 	 */
-	public ReturnState sendMessage(String courierOpenId);
+	public ReturnState sendMessage(String courierOpenId, String message);
 
 	/**
 	 * 根据 快递员openId获得快递员对象

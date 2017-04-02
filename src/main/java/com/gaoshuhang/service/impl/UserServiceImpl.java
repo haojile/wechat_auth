@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService
 	}
 
 	@Override
-	public ReturnState sendMessage(String userOpenId)
+	public ReturnState sendMessage(String userOpenId, String message)
 	{
 		return null;
 	}

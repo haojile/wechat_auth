@@ -34,7 +34,8 @@ public interface InitService
 	/**
 	 * 发送text消息
 	 * @param openId 用户openId
+	 * @param message 发送的文本信息
 	 * @return 状态机结果
 	 */
-	public ReturnState sendMessage(String openId);
+	public ReturnState sendMessage(String openId, String message);
 }

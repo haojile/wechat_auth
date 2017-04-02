@@ -16,4 +16,10 @@ public class SimulatedSessionImpl implements SimulatedSession
 	{
 
 	}
+
+	@Override
+	public void removeSession(String openId)
+	{
+
+	}
 }

@@ -49,9 +49,10 @@ public interface UserService
 	/**
 	 * 发送text消息
 	 * @param userOpenId 用户openId
+	 * @param message 发送的文本信息
 	 * @return 状态机结果
 	 */
-	public ReturnState sendMessage(String userOpenId);
+	public ReturnState sendMessage(String userOpenId, String message);
 
 	/**
 	 * 根据用户ID查询用户

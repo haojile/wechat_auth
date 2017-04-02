@@ -30,7 +30,7 @@ public class InitServiceImpl implements InitService
 	}
 
 	@Override
-	public ReturnState sendMessage(String openId)
+	public ReturnState sendMessage(String openId, String message)
 	{
 		return null;
 	}

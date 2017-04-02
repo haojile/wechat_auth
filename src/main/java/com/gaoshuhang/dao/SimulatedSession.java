@@ -23,4 +23,11 @@ public interface SimulatedSession
 	 * @param session session对象
 	 */
 	public void setSession(String openId, Session session);
+
+	/**
+	 * 通过openId清除session
+	 *
+	 * @param openId 用户openId
+	 */
+	public void removeSession(String openId);
 }

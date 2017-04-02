@@ -19,15 +19,17 @@ public interface QrCodeDao
 	/**
 	 * 生成二维码,该方法可能有性能问题
 	 *
+	 * @param data 生成二维码所需字符串
 	 * @return 二维码内存位图对象
 	 */
-	public BufferedImage createQrCode();
+	public BufferedImage createQrCode(String data);
 
 	/**
 	 * 生成二维码,第二种二维码获得方式
 	 *
+	 * @param data 生成二维码所需字符串
 	 * @return 二维码URL, 也就是生成二维码后缓存在服务器上, 并返回其URL
 	 */
-	public URL createQrCodeWithUrl();
+	public URL createQrCodeWithUrl(String data);
 
 }
