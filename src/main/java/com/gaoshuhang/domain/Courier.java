@@ -9,6 +9,7 @@ public class Courier
 	private String openId;
 	private String phoneNum;
 	private String cardId;
+	private String name;
 	private Integer deleted;
 
 	public Long getUserId()
@@ -61,6 +62,16 @@ public class Courier
 		this.deleted = deleted;
 	}
 
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
 	@Override
 	public String toString()
 	{
@@ -69,6 +80,7 @@ public class Courier
 				", openId='" + openId + '\'' +
 				", phoneNum='" + phoneNum + '\'' +
 				", cardId='" + cardId + '\'' +
+				", name='" + name + '\'' +
 				", deleted=" + deleted +
 				'}';
 	}

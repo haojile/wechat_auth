@@ -1,8 +1,10 @@
 package com.gaoshuhang.service.impl;
 
 import com.gaoshuhang.dao.CourierDao;
+import com.gaoshuhang.dao.QrCodeDao;
 import com.gaoshuhang.dao.SimulatedSession;
 import com.gaoshuhang.dao.impl.CourierDaoImpl;
+import com.gaoshuhang.dao.impl.QrCodeDaoImpl;
 import com.gaoshuhang.dao.impl.SimulatedSessionImpl;
 import com.gaoshuhang.domain.Courier;
 import com.gaoshuhang.domain.ReturnState;
@@ -10,6 +12,7 @@ import com.gaoshuhang.domain.Session;
 import com.gaoshuhang.global.UserGroup;
 import com.gaoshuhang.global.UserState;
 import com.gaoshuhang.service.CourierService;
+import com.gaoshuhang.utils.RandValueGen;
 
 import java.awt.image.BufferedImage;
 
@@ -18,6 +21,7 @@ public class CourierServiceImpl implements CourierService
 
 	private CourierDao courierDao = new CourierDaoImpl();
 	private SimulatedSession simulatedSession = new SimulatedSessionImpl();
+	private QrCodeDao qrCodeDao = new QrCodeDaoImpl();
 
 	@Override
 	public ReturnState courierUngroup(String courierOpenId)
@@ -344,8 +348,8 @@ public class CourierServiceImpl implements CourierService
 				session.setState(UserState.COURIER_BINDING_1);
 				session.getDataMap().put("phone_num", message);
 
-				//todo 生成随机短信验证码存入session
-
+				String str = RandValueGen.getRandString(4);
+				session.getDataMap().put("sms_vercode", str);
 				//todo 向手机发送短信验证码
 
 			}
@@ -354,7 +358,7 @@ public class CourierServiceImpl implements CourierService
 			{
 				returnState.setCategory("courier");
 				returnState.setPreviousState(session.getState());
-				returnState.setCurrentState(UserState.COURIER_BINDING_1);
+				returnState.setCurrentState(UserState.COURIER_BIND_INIT);
 				returnState.setReturnMessage("输入手机号错误，请重新输入");
 				returnState.setReturnBundle(null);
 			}
@@ -363,27 +367,98 @@ public class CourierServiceImpl implements CourierService
 		else if(currentState == UserState.COURIER_BINDING_1)
 		{
 			//输入信息为验证码
+			if(message.matches("^[0-9]{4}$"))
+			{
+				//验证码正确
+				if(message.equals(session.getDataMap().get("sms_vercode")))
+				{
+					returnState.setCategory("courier");
+					returnState.setPreviousState(session.getState());
+					returnState.setCurrentState(UserState.COURIER_BINDING_2);
+					returnState.setReturnMessage("请输入姓名");
+					returnState.setReturnBundle(null);
 
+					session.setState(UserState.COURIER_BINDING_2);
+				}
+				//验证码错误
+				else
+				{
+					returnState.setCategory("courier");
+					returnState.setPreviousState(session.getState());
+					returnState.setCurrentState(UserState.COURIER_BINDING_1);
+					returnState.setReturnMessage("验证码错误，请重新输入");
+					returnState.setReturnBundle(null);
+				}
+			}
 			//输入错误信息
+			else
+			{
+				returnState.setCategory("courier");
+				returnState.setPreviousState(session.getState());
+				returnState.setCurrentState(UserState.COURIER_BINDING_1);
+				returnState.setReturnMessage("验证码格式错误");
+				returnState.setReturnBundle(null);
+			}
 		}
 		//等待用户输入姓名
 		else if(currentState == UserState.COURIER_BINDING_2)
 		{
 			//输入信息为姓名
-			//输入错误信息
+			returnState.setCategory("courier");
+			returnState.setPreviousState(session.getState());
+			returnState.setCurrentState(UserState.COURIER_BINDING_3);
+			returnState.setReturnMessage("请输入您的身份证号");
+			returnState.setReturnBundle(null);
+
+			//更新session
+			session.setState(UserState.COURIER_BINDING_3);
+			session.getDataMap().put("name", message);
 		}
 		//等待用户输入身份证号
 		else if(currentState == UserState.COURIER_BINDING_3)
 		{
 			//输入信息为身份证号
+			if(message.matches("^.{15,20}$"))
+			{
+				//这里就不审核了，直接跳到绑定成功
+				returnState.setCategory("courier");
+				returnState.setPreviousState(session.getState());
+				returnState.setCurrentState(UserState.COURIER_BINDED);
+				returnState.setReturnMessage("注册已完成，请等待审核，审核结束即可自动正常使用");
+				returnState.setReturnBundle(null);
+
+				//更新session
+				session.setState(UserState.COURIER_BINDED);
+				session.getDataMap().put("card_id", message);
+
+				//数据库操作
+				Courier courier = new Courier();
+				courier.setOpenId(session.getOpenId());
+				courier.setCardId((String) session.getDataMap().get("card_id"));
+				courier.setName((String) session.getDataMap().get("name"));
+				courier.setPhoneNum((String) session.getDataMap().get("phone_num"));
+				courier.setDeleted(1);
+				courierDao.insertCourier(courier);
+
+				//更新永久session
+				session.setCourier(courier);
+			}
 			//输入错误信息
+			else
+			{
+				returnState.setCategory("courier");
+				returnState.setPreviousState(session.getState());
+				returnState.setCurrentState(UserState.COURIER_BINDING_3);
+				returnState.setReturnMessage("身份证号格式错误");
+				returnState.setReturnBundle(null);
+			}
 		}
 		//等待审核
 		else if(currentState == UserState.COURIER_BINDING_4)
 		{
 			returnState.setCategory("courier");
 			returnState.setPreviousState(session.getState());
-			returnState.setCurrentState(UserState.COURIER_BINDING_1);
+			returnState.setCurrentState(UserState.COURIER_BINDING_4);
 			returnState.setReturnMessage("请耐心等待审核结果");
 			returnState.setReturnBundle(null);
 		}
@@ -392,8 +467,8 @@ public class CourierServiceImpl implements CourierService
 		{
 			returnState.setCategory("courier");
 			returnState.setPreviousState(session.getState());
-			returnState.setCurrentState(UserState.COURIER_BINDING_1);
-			//todo 正常情况下回复信息
+			returnState.setCurrentState(UserState.COURIER_BINDED);
+			//todo 正常情况下回复的信息
 			returnState.setReturnMessage("？？？");
 			returnState.setReturnBundle(null);
 		}

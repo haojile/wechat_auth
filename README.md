@@ -43,6 +43,17 @@
 5. 注意编码统一utf8，尤其是windows下的eclipse
 6. 需要改动别人代码时通知一声
 
-## 进度
+## 重要！！
 
-暂无
+### 4-02
+
+* domain.Session修改，添加了dataMap属性，删除了validate_tempstr属性
+* SimulatedSession接口添加了removeSession方法
+* dao.SimulatedSession接口修改，生成二维码函数添加了字符串属性（根据字符串生成二维码）
+* 三个Service接口修改，sendMessage函数全部忘了一个String参数
+
+解释：session中的临时变量不止有validate_temp，可能随着业务需求增加，还会有其他的需要添加，所以把此类临时变量以键值对形式全部存入dataMap，DAO实现上可以选用类序列化。
+
+### 4-26
+
+* Courier实体类修改，我忘了写name属性
